@@ -3,6 +3,7 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
@@ -39,6 +40,14 @@ export class UsersService {
     return await this.usersRepository.findOne({ where: { id } });
   }
 
+  async findOneByEmail(email: string): Promise<User> {
+    try {
+      return await this.usersRepository.findOneByOrFail({ email });
+    } catch (error) {
+      throw new NotFoundException(`${email} not found`);
+    }
+  }
+
   // update(id: number, updateUserInput: UpdateUserInput) {
   //   return `This action updates a #${id} user`;
   // }
@@ -51,7 +60,9 @@ export class UsersService {
     if (error.code === '23505') {
       throw new BadRequestException(error.detail.replace('Key ', ''));
     }
+
     this.logger.error(error);
+
     throw new InternalServerErrorException('Please check server logs');
   }
 }

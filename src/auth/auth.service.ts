@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 
 import { AuthResponse } from './types/auth-response.type';
-import { SignupInput } from './dto/inputs/signup.input';
+import { SignupInput, LoginInput } from './dto/inputs';
 import { UsersService } from '../users/users.service';
 
 @Injectable()
@@ -17,5 +18,19 @@ export class AuthService {
       token,
       user,
     };
+  }
+
+  async login(loginInput: LoginInput): Promise<AuthResponse> {
+    const { email, password } = loginInput;
+    const user = await this.userService.findOneByEmail(email);
+
+    if (!bcrypt.compareSync(password, user.password)) {
+      throw new BadRequestException('Email / Password do not match');
+    }
+
+    // TODO - JWT
+    const token = '123xXXx';
+
+    return { token, user };
   }
 }
