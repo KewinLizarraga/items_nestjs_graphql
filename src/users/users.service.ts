@@ -11,6 +11,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 import { User } from './entities/user.entity';
 import { SignupInput } from '../auth/dto/inputs/signup.input';
+import { ValidRoles } from '../auth/enums/valid-roles.enum';
 
 @Injectable()
 export class UsersService {
@@ -32,8 +33,16 @@ export class UsersService {
     }
   }
 
-  async findAll(): Promise<User[]> {
-    return await this.usersRepository.find();
+  async findAll(roles: ValidRoles[]): Promise<User[]> {
+    if (roles.length === 0) {
+      return await this.usersRepository.find();
+    }
+    return this.usersRepository
+      .createQueryBuilder()
+      .andWhere('ARRAY[roles] && ARRAY[:...roles]')
+      .setParameter('roles', roles)
+
+      .getMany();
   }
 
   async findOneById(id: string): Promise<User> {
@@ -56,8 +65,11 @@ export class UsersService {
   //   return `This action updates a #${id} user`;
   // }
 
-  block(id: string): Promise<User> {
-    throw new Error('block method not implement');
+  async block(id: string, adminUser: User): Promise<User> {
+    const userToBlock = await this.findOneById(id);
+    userToBlock.isActive = false;
+    userToBlock.lastUpdateBy = adminUser;
+    return await this.usersRepository.save(userToBlock);
   }
 
   private handleDBErrors(error: any): never {
