@@ -12,6 +12,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { SignupInput } from '../auth/dto/inputs/signup.input';
 import { ValidRoles } from '../auth/enums/valid-roles.enum';
+import { UpdateUserInput } from './dto/update-user.input';
 
 @Injectable()
 export class UsersService {
@@ -61,9 +62,26 @@ export class UsersService {
     }
   }
 
-  // update(id: number, updateUserInput: UpdateUserInput) {
-  //   return `This action updates a #${id} user`;
-  // }
+  async update(
+    id: string,
+    updateUserInput: UpdateUserInput,
+    updateBy: User,
+  ): Promise<User> {
+    try {
+      const user = await this.usersRepository.preload({
+        ...updateUserInput,
+        id,
+      });
+      if (!user) {
+        throw new BadRequestException(`User Not Found`);
+      }
+
+      user.lastUpdateBy = updateBy;
+      return await this.usersRepository.save(user);
+    } catch (error) {
+      this.handleDBErrors(error);
+    }
+  }
 
   async block(id: string, adminUser: User): Promise<User> {
     const userToBlock = await this.findOneById(id);
@@ -73,11 +91,17 @@ export class UsersService {
   }
 
   private handleDBErrors(error: any): never {
+    this.logger.error(error);
+
     if (error.code === '23505') {
       throw new BadRequestException(error.detail.replace('Key ', ''));
     }
-
-    this.logger.error(error);
+    if (error.code === 'error-001') {
+      throw new BadRequestException(error.detail.replace('Key ', ''));
+    }
+    if (error.status === 400) {
+      throw new BadRequestException(error.response.message);
+    }
 
     throw new InternalServerErrorException('Please check server logs');
   }
