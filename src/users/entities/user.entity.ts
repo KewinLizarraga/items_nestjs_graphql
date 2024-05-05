@@ -8,7 +8,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-import { Item } from '../../items/entities/item.entity';
+import { Item } from './../../items/entities/item.entity';
 
 @Entity({ name: 'users' })
 @ObjectType()

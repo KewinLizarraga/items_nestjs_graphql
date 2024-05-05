@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 
 import { CreateItemInput, UpdateItemInput } from './dto/inputs';
 import { Item } from './entities/item.entity';
-import { User } from '../users/entities/user.entity';
+import { User } from './../users/entities/user.entity';
 
 @Injectable()
 export class ItemsService {

@@ -10,8 +10,8 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { User } from './entities/user.entity';
-import { SignupInput } from '../auth/dto/inputs/signup.input';
-import { ValidRoles } from '../auth/enums/valid-roles.enum';
+import { SignupInput } from './../auth/dto/inputs/signup.input';
+import { ValidRoles } from './../auth/enums/valid-roles.enum';
 import { UpdateUserInput } from './dto/update-user.input';
 
 @Injectable()
@@ -42,16 +42,7 @@ export class UsersService {
       .createQueryBuilder()
       .andWhere('ARRAY[roles] && ARRAY[:...roles]')
       .setParameter('roles', roles)
-
       .getMany();
-  }
-
-  async findOneById(id: string): Promise<User> {
-    try {
-      return await this.usersRepository.findOneByOrFail({ id });
-    } catch (error) {
-      throw new NotFoundException(`${id} not found`);
-    }
   }
 
   async findOneByEmail(email: string): Promise<User> {
@@ -59,6 +50,18 @@ export class UsersService {
       return await this.usersRepository.findOneByOrFail({ email });
     } catch (error) {
       throw new NotFoundException(`${email} not found`);
+      // this.handleDBErrors({
+      //   code: 'error-001',
+      //   detail: `${ email } not found`
+      // });
+    }
+  }
+
+  async findOneById(id: string): Promise<User> {
+    try {
+      return await this.usersRepository.findOneByOrFail({ id });
+    } catch (error) {
+      throw new NotFoundException(`${id} not found`);
     }
   }
 

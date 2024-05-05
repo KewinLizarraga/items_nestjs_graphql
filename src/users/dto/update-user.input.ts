@@ -1,7 +1,7 @@
 import { IsArray, IsBoolean, IsOptional, IsUUID } from 'class-validator';
 import { CreateUserInput } from './create-user.input';
 import { InputType, Field, PartialType, ID } from '@nestjs/graphql';
-import { ValidRoles } from 'src/auth/enums/valid-roles.enum';
+import { ValidRoles } from './../../auth/enums/valid-roles.enum';
 
 @InputType()
 export class UpdateUserInput extends PartialType(CreateUserInput) {
@@ -17,5 +17,5 @@ export class UpdateUserInput extends PartialType(CreateUserInput) {
   @Field(() => Boolean, { nullable: true })
   @IsBoolean()
   @IsOptional()
-  isActibe?: boolean;
+  isActive?: boolean;
 }

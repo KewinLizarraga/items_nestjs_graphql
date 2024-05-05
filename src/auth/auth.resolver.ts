@@ -29,7 +29,7 @@ export class AuthResolver {
 
   @Query(() => AuthResponse, { name: 'revalite' })
   @UseGuards(JwtAuthGuard)
-  revaliteToken(@CurrentUser([ValidRoles.admin]) user: User): AuthResponse {
-    return this.authService.revaliteToken(user);
+  revalidateToken(@CurrentUser([ValidRoles.admin]) user: User): AuthResponse {
+    return this.authService.revalidateToken(user);
   }
 }

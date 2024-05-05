@@ -48,6 +48,9 @@ type Mutation {
   createItem(createItemInput: CreateItemInput!): Item!
   updateItem(updateItemInput: UpdateItemInput!): Item!
   removeItem(id: ID!): Item!
+
+  """Ejecuta la construcción de la DB"""
+  executeSeed: Boolean!
 }
 
 input SignupInput {
@@ -67,7 +70,7 @@ input UpdateUserInput {
   password: String
   id: ID!
   roles: [ValidRoles!]
-  isActibe: Boolean
+  isActive: Boolean
 }
 
 input CreateItemInput {

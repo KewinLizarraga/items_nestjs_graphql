@@ -2,7 +2,7 @@ import { join } from 'path';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
-import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
+import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
@@ -10,6 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ItemsModule } from './items/items.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { SeedModule } from './seed/seed.module';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { AuthModule } from './auth/auth.module';
       useFactory: async (jwtService: JwtService) => ({
         playground: false,
         autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-        plugins: [ApolloServerPluginLandingPageLocalDefault()],
+        plugins: [ApolloServerPluginLandingPageLocalDefault],
         context({ req }) {
           // const token = req.headers.authorization?.replace('Bearer ', '');
           // if (!token) throw Error('Token needed');
@@ -36,7 +37,7 @@ import { AuthModule } from './auth/auth.module';
     //   driver: ApolloDriver,
     //   autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
     //   playground: false,
-    //   plugins: [ApolloServerPluginLandingPageLocalDefault()],
+    //   plugins: [ApolloServerPluginLandingPageLocalDefault]
     // }),
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -51,6 +52,7 @@ import { AuthModule } from './auth/auth.module';
     ItemsModule,
     UsersModule,
     AuthModule,
+    SeedModule,
   ],
   controllers: [],
   providers: [],
